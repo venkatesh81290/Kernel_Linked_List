@@ -11,6 +11,14 @@ MODULE_LICENSE("GPL");
 #define BUF_LEN 16
 #define NUM 5
 
+#define DEBUG		//Comment to disable debug messages
+
+#ifdef DEBUG
+#define MYDEBUG(fmt, args...) printk(fmt, ##args);
+#else
+#define MYDEBUG(fmt, args...)
+#endif
+
 struct message {
 	int msg_id;
 	char data[BUF_LEN];
@@ -21,6 +29,8 @@ void create_list(void) {
 	int i;
 	struct message *tmp;
 
+	MYDEBUG("******************* CREATING LIST *******************\n");
+
 	INIT_LIST_HEAD(&msg.klist);
 
 	for( i = 0; i < NUM; i++) {
@@ -30,6 +40,10 @@ void create_list(void) {
 		sprintf(tmp->data, "DATA%d", i);
 
 		list_add(&(tmp->klist),&(msg.klist));
+		MYDEBUG("Address of list head : %p\n", &(msg.klist));
+		MYDEBUG("Address of Node%d : %p\n", i, tmp);
+		MYDEBUG("Node%d -> prev value : %p\n", i, tmp->klist.prev);
+		MYDEBUG("Node%d -> next value : %p\n", i, tmp->klist.next);
 	}
 
 }
@@ -37,6 +51,8 @@ void create_list(void) {
 void delete_list(void) {
 	struct message *tmp;
 	struct list_head *pos, *q;
+	
+	MYDEBUG("******************* DELETING LIST *******************\n");
 
 	list_for_each_safe(pos, q, &(msg.klist)) {
 		tmp = list_entry(pos, struct message, klist);
@@ -48,15 +64,20 @@ void delete_list(void) {
 
 void display_list(void) {
 	struct message *tmp;
+	int flag = 0;
+
+	MYDEBUG("******************* DISPLAYING LIST *******************\n");
 
 	list_for_each_entry(tmp,&(msg.klist),klist) {
+		if (!flag) flag = 1;
 		printk("msg_id: %d msg_data : %s \n",tmp->msg_id, tmp->data);
 	}
+	if(!flag) printk("Nothing to disaply...\n");
 }
 
 
 static __init int my_list_init(void) {
-	printk("%s :: Linux kernel linked list implementation...\n", __func__);
+	printk("\n\n******************* kernel_linklist.ko :: %s - LINUX KERNEL LINKED LIST *******************\n", __func__);
 	create_list();
 	display_list();
 	delete_list();
@@ -64,7 +85,7 @@ static __init int my_list_init(void) {
 	return 0;
 }
 static __exit int my_list_exit(void) {
-	printk("kernel_linklist.ko - my_list_exit() :: Linux kernel linked list implementation...\n");
+	printk("******************* kernel_linklist.ko :: %s - LINUX KERNEL LINKED LIST *******************\n", __func__);
 	return 0;
 }
 

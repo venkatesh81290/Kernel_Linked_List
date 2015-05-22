@@ -76,7 +76,7 @@ void display_list(void) {
 }
 
 
-static __init int my_list_init(void) {
+static int __init my_list_init(void) {
 	printk("\n\n******************* kernel_linklist.ko :: %s - LINUX KERNEL LINKED LIST *******************\n", __func__);
 	create_list();
 	display_list();
@@ -84,9 +84,8 @@ static __init int my_list_init(void) {
 	display_list();
 	return 0;
 }
-static __exit int my_list_exit(void) {
+static void __exit my_list_exit(void) {
 	printk("******************* kernel_linklist.ko :: %s - LINUX KERNEL LINKED LIST *******************\n", __func__);
-	return 0;
 }
 
 module_init(my_list_init);

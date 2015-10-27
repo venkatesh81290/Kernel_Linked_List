@@ -3,27 +3,11 @@
 #include<linux/list.h>
 #include<linux/slab.h>
 #include<linux/string.h>
+#include"kernel_linklist.h"
 
 MODULE_AUTHOR("Venkatesh Parthasarathy");
 MODULE_DESCRIPTION("Linux kernel linked list implementation");
 MODULE_LICENSE("GPL");
-
-#define BUF_LEN 16
-#define NUM 5
-
-#define DEBUG		//Comment to disable debug messages
-
-#ifdef DEBUG
-#define MYDEBUG(fmt, args...) printk(fmt, ##args);
-#else
-#define MYDEBUG(fmt, args...)
-#endif
-
-struct message {
-	int msg_id;
-	char data[BUF_LEN];
-	struct list_head klist;
-}msg;
 
 void create_list(void) {
 	int i;
@@ -32,6 +16,10 @@ void create_list(void) {
 	MYDEBUG("******************* CREATING LIST *******************\n");
 
 	INIT_LIST_HEAD(&msg.klist);
+	MYDEBUG("Address of list head : %p\n", &(msg.klist));
+	MYDEBUG("Address of list head prev : %p\n", msg.klist.prev);
+	MYDEBUG("Address of list head next : %p\n", msg.klist.next);
+	MYDEBUG("Address of list head data : %d |%s| \n", msg.msg_id, msg.data);
 
 	for( i = 0; i < NUM; i++) {
 
@@ -40,10 +28,10 @@ void create_list(void) {
 		sprintf(tmp->data, "DATA%d", i);
 
 		list_add(&(tmp->klist),&(msg.klist));
-		MYDEBUG("Address of list head : %p\n", &(msg.klist));
-		MYDEBUG("Address of Node%d : %p\n", i, tmp);
-		MYDEBUG("Node%d -> prev value : %p\n", i, tmp->klist.prev);
-		MYDEBUG("Node%d -> next value : %p\n", i, tmp->klist.next);
+//		MYDEBUG("Address of Node%d : %p\n", i, tmp);
+//		MYDEBUG("Node%d -> prev value : %p\n", i, tmp->klist.prev);
+//		MYDEBUG("Node%d -> next value : %p\n", i, tmp->klist.next);
+	display_list();
 	}
 
 }
@@ -59,6 +47,7 @@ void delete_list(void) {
 		printk("Deleting :: msg_id %d msg_data : %s \n",tmp->msg_id, tmp->data);
 		list_del(pos);
 		kfree(tmp);
+	display_list();
 	}
 }
 
@@ -70,7 +59,11 @@ void display_list(void) {
 
 	list_for_each_entry(tmp,&(msg.klist),klist) {
 		if (!flag) flag = 1;
-		printk("msg_id: %d msg_data : %s \n",tmp->msg_id, tmp->data);
+		printk("node : %p msg_id: %d msg_data : %s prev : %p  next %p \n",tmp, tmp->msg_id, tmp->data, tmp->klist.prev, tmp->klist.next);
+		MYDEBUG("Address of list head : %p\n", &(msg.klist));
+		MYDEBUG("Address of list head prev : %p\n", msg.klist.prev);
+		MYDEBUG("Address of list head next : %p\n", msg.klist.next);
+		MYDEBUG("Address of list head data : %d |%s| \n", msg.msg_id, msg.data);
 	}
 	if(!flag) printk("Nothing to disaply...\n");
 }
